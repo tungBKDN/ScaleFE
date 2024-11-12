@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ResultFormat, TimeFormat, TextCapitalize } from "../assets/scripts/ResultFormat";
 import TableOfReceipts from "../components/TableOfReceipts";
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import urls from "../URLs/urls";
+import { parse } from "url";
 
 const LiveScale = () => {
     const STATES = ['KHÔNG ĐƯỢC KẾT NỐI', 'ĐÃ KẾT NỐI', 'ĐANG KẾT NỐI', 'ĐÃ KẾT NỐI, DỮ LIỆU SAI!'];
@@ -14,8 +15,20 @@ const LiveScale = () => {
     const [receipt, setReceipt] = useState([]); // this is a Stack of raw receipts receives from server
     const [groupedReceipt, setGroupedReceipt] = useState({}); // this is a Stack of grouped receipts
     const [fruits, setFruits] = useState([]); // this is a list of fruits, this list will be used for referencing the price of each fruit
-    const [totalPrice, setTotalPrice] = useState([]);
+    const [totalPrice, setTotalPrice] = useState(0);
     const [receiptID, setReceiptID] = useState("N/A");
+    const [prevWeight, setPrevWeight] = useState(0.00);
+    const [weightChanges, setWeightChanges] = useState(0);
+    const [isSend, setIsSend] = useState(true);
+
+    const [buffer, setBuffer] = useState([]);
+    const bufferRef = useRef(buffer);
+    const [timeoutId, setTimeoutId] = useState(null);
+
+    const HIGH_THRESHOLD = 0.05;
+    const LOW_THRESHOLD = 0.015;
+    const FLOOR = 0.025;
+    const TIMEOUT = 1500;
 
     // Post the item to the server
     const postItem = async (weight, receiptID) => {
@@ -25,7 +38,7 @@ const LiveScale = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(receiptID && receiptID !== "N/A" ? { "weight": weight, "receipt_id": receiptID } : { "weight": weight })
+                body: JSON.stringify(receiptID && receiptID !== "N/A" ? { "weight": parseFloat(weight), "receipt_id": receiptID } : { "weight": parseFloat(weight) }),
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -41,9 +54,35 @@ const LiveScale = () => {
 
     // Weight changes, there must be anything on the scale. Post the item to the server
     useEffect(() => {
-        // if (true) {
-        //     postItem(weight, receiptID);
-        // }
+        if ((isSend == true && parseFloat(weightChanges) > 0) && (Math.abs(weight - prevWeight) < HIGH_THRESHOLD) && (Math.abs(weight - prevWeight) > LOW_THRESHOLD) && parseFloat(weight) > 0.01 && parseFloat(prevWeight) > 0.01) {
+            console.log("Buffering item: ", weight, receiptID);
+            setBuffer({ weight, receiptID });
+            bufferRef.current = { weight, receiptID };
+
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+
+            const newTimeoutId = setTimeout(() => {
+                console.log("Post item: ", bufferRef.current.weight, bufferRef.current.receiptID);
+                postItem(bufferRef.current.weight, bufferRef.current.receiptID);
+                setIsSend(false);
+                setBuffer(null);
+                bufferRef.current = null;
+            }, TIMEOUT);
+
+            setTimeoutId(newTimeoutId);
+        }
+        if (weight <= FLOOR) {
+            setIsSend(true);
+        }
+        // console.log("Conditions");
+        // console.log(parseFloat(weightChanges) > 0, parseFloat(weightChanges));
+        // console.log(Math.abs(weight - prevWeight) < HIGH_THRESHOLD, Math.abs(weight - prevWeight));
+        // console.log(parseFloat(weight) > 0.01, parseFloat(weight));
+        // console.log(parseFloat(prevWeight) > 0.01, parseFloat(prevWeight));
+        setPrevWeight(parseFloat(parseFloat(weight).toFixed(2)));
+        setWeightChanges(parseFloat((weight - prevWeight).toFixed(2)));
     }, [weight]);
 
     const fetchFruits = async () => {
@@ -69,32 +108,32 @@ const LiveScale = () => {
     }, []);
 
     // Example of raw receipts
-    useEffect(() => {
-        const temp = [
-            {
-                "time": "2024-11-09 08:58:59",
-                "receipt_id": "12345",
-                "product": "Apple",
-                "weight": 2.5,
-                "total_price": 55
-            },
-            {
-                "time": "2024-11-09 09:01:00",
-                "receipt_id": "12345",
-                "product": "Banana",
-                "weight": 3.0,
-                "total_price": 60
-            },
-            {
-                "time": "2024-11-09 09:02:12",
-                "receipt_id": "12345",
-                "product": "Apple",
-                "weight": 3,
-                "total_price": 66
-            },
-        ];
-        setReceipt(temp);
-    }, []);
+    // useEffect(() => {
+    //     const temp = [
+    //         {
+    //             "time": "2024-11-09 08:58:59",
+    //             "receipt_id": "12345",
+    //             "product": "Apple",
+    //             "weight": 2.5,
+    //             "total_price": 55
+    //         },
+    //         {
+    //             "time": "2024-11-09 09:01:00",
+    //             "receipt_id": "12345",
+    //             "product": "Banana",
+    //             "weight": 3.0,
+    //             "total_price": 60
+    //         },
+    //         {
+    //             "time": "2024-11-09 09:02:12",
+    //             "receipt_id": "12345",
+    //             "product": "Apple",
+    //             "weight": 3,
+    //             "total_price": 66
+    //         },
+    //     ];
+    //     setReceipt(temp);
+    // }, []);
 
     const addReceipt = (receiptJSON) => {
         setReceipt(prevReceipt => {
@@ -156,12 +195,13 @@ const LiveScale = () => {
         receipt.forEach(r => {
             totalPrices.push(r.total_price);
         });
-        return Math.max(...totalPrices);
+        let total = Math.max(...totalPrices);
+        return total < 0 ? 0 : total;
     }
 
     // Connect to the WebSocket server
     useEffect(() => {
-        const socket = new WebSocket('ws://192.168.137.135:8001/ws');
+        const socket = new WebSocket('ws://192.168.1.9:8001/ws');
         setWs(socket);
         setState(2);
 
@@ -174,13 +214,8 @@ const LiveScale = () => {
             // console.log('Message from server:', event.data);
             let _json = JSON.parse(event.data);
             setTime(new Date());
-            if (_json.data < -0.01) {
-                setState(3);
-                setWeight(0.00);
-            } else {
-                setState(1);
-                setWeight(Math.abs(_json.data));
-            }
+            setState(1);
+            setWeight(parseFloat(Math.abs(_json.data).toFixed(2)));
         };
 
         socket.onclose = () => {
@@ -238,7 +273,7 @@ const LiveScale = () => {
                     </div>
                 </div>
                 <div className="align-items-center mt-3">
-                    <TableOfReceipts receipt={groupedReceipt} referencing={fruits} total={totalPrice}/>
+                    <TableOfReceipts receipt={groupedReceipt} referencing={fruits} total={totalPrice} />
                 </div>
             </div>
         </div>

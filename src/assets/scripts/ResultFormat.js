@@ -1,5 +1,6 @@
-export function ResultFormat(value) {
-    return value.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+export function ResultFormat(value, digit = 2) {
+    value = parseFloat(value);
+    return value.toFixed(digit).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 export function TimeFormat(value) {
@@ -20,10 +21,11 @@ export function TimeFormat(value) {
 }
 
 export function PriceFormat(value, unit) {
+    value = Math.round(parseFloat(value));
     // format: d.ddd.ddd VND
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " " + unit;
 }
 
 export function TextCapitalize(text) {
-    return text.toString().charAt(0).toUpperCase() + text.toString().slice(1);
+    return text.toString().charAt(0).toUpperCase() + text.toString().slice(1).toLowerCase();
 }

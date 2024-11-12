@@ -3,11 +3,11 @@ import { PriceFormat } from "../assets/scripts/ResultFormat";
 import Card from "../components/Card";
 
 const HomePage = () => {
-    const [totalIncome, setTotalIncome] = useState("N/A");
-    const [totalReceipts, setTotalReceipts] = useState("N/A");
-    const [totalFruits, setTotalFruits] = useState("N/A");
+    const [totalIncome, setTotalIncome] = useState("77000");
+    const [totalReceipts, setTotalReceipts] = useState("2");
+    const [totalFruits, setTotalFruits] = useState("7");
 
-    const [lastUpdate, setLastUpdate] = useState("N/A");
+    const [lastUpdate, setLastUpdate] = useState("20:12 08/11/2024");
     return (
         <div className="container mt-5">
             <div className="row">
