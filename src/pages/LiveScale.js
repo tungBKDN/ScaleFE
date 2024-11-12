@@ -249,12 +249,13 @@ const LiveScale = () => {
                     {state === 2 && <span className="badge bg-info">{STATES[state]}</span>}
                     {state === 3 && <span className="badge bg-warning">{STATES[state]}</span>}
                 </div>
-                <h1 className="text-center mb-3">Giá trị đo trực tiếp trên bàn cân </h1>
+                <h1 className="text-center mb-3">Giá trị đo trực tiếp trên bàn cân</h1>
                 <div className="row">
                     <div className="col-md-6 offset-md-3">
-                        <div className="card">
+                        <div className="card shadow-sm">
                             <div className="card-body text-center">
-                                <h5 className="card-title">Đo lúc: </h5><h6 className="card-title" style={{ fontFamily: 'monospace' }}>{TimeFormat(time)}</h6>
+                                <h5 className="card-title">Đo lúc:</h5>
+                                <h6 className="card-title" style={{ fontFamily: 'monospace' }}>{TimeFormat(time)}</h6>
                                 <p className="card-text display-4" style={{ fontFamily: 'monospace' }}>{ResultFormat(weight)} kg</p>
                             </div>
                         </div>
@@ -268,8 +269,12 @@ const LiveScale = () => {
                         <p className="text-left m-0">Mã hóa đơn: <strong>{receiptID}</strong></p>
                     </div>
                     <div className="d-flex">
-                        <button className="btn btn-danger me-3 d-flex align-items-center" onClick={resetReceipt}><DeleteForeverIcon className="me-1" />Hủy hóa đơn này</button>
-                        <button className="btn btn-primary d-flex align-items-center" onClick={finishReceipt}><AssignmentTurnedInIcon className="me-1" />Hoàn thành hóa đơn</button>
+                        <button className="btn btn-danger me-3 d-flex align-items-center shadow-sm" onClick={resetReceipt}>
+                            <DeleteForeverIcon className="me-1" />Hủy hóa đơn này
+                        </button>
+                        <button className="btn btn-primary d-flex align-items-center shadow-sm" onClick={finishReceipt}>
+                            <AssignmentTurnedInIcon className="me-1" />Hoàn thành hóa đơn
+                        </button>
                     </div>
                 </div>
                 <div className="align-items-center mt-3">
