@@ -1,13 +1,53 @@
 import React, { useState, useEffect } from "react";
-import { PriceFormat } from "../assets/scripts/ResultFormat";
+import { PriceFormat, TimeFormat } from "../assets/scripts/ResultFormat";
 import Card from "../components/Card";
+import urls from "../URLs/urls";
 
 const HomePage = () => {
-    const [totalIncome, setTotalIncome] = useState("77000");
-    const [totalReceipts, setTotalReceipts] = useState("2");
-    const [totalFruits, setTotalFruits] = useState("7");
+    const [totalIncome, setTotalIncome] = useState("N/A");
+    const [totalReceipts, setTotalReceipts] = useState("N/A");
+    const [totalFruits, setTotalFruits] = useState("N/A");
 
-    const [lastUpdate, setLastUpdate] = useState("20:12 08/11/2024");
+    const satistics = (data) => {
+        let totalBillCount = 0;
+        let totalBillAmount = 0;
+        for (const key in data) {
+            if (data[key].receipt) {
+                totalBillCount++;
+                totalBillAmount += data[key].receipt.total_price;
+            }
+        }
+        return { totalBillCount, totalBillAmount };
+    }
+
+    const fetchData = async () => {
+        const billsData = await fetch(urls.server + urls.getBills.path, {
+            method: urls.getBills.method,
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const fruitData = await fetch(urls.server + urls.getProducts.path, {
+            method: urls.getProducts.method,
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const bills = await billsData.json();
+        const fruits = await fruitData.json();
+        setTotalFruits(fruits.products.length);
+        const { totalBillCount, totalBillAmount } = satistics(bills);
+        setTotalIncome(totalBillAmount);
+        setTotalReceipts(totalBillCount);
+        setLastUpdate(TimeFormat(new Date().toLocaleString()));
+    }
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const [lastUpdate, setLastUpdate] = useState("N/A");
     return (
         <div className="container mt-5">
             <div className="row">

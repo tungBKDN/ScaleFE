@@ -12,6 +12,12 @@ const urls = {
         "path": "/api/receipt_builder/",
         "method": "POST"
     },
+
+    // get all receipts
+    "getBills": {
+        "path": "/api/receipt_builder/",
+        "method": "GET"
+    },
 }
 
 export default urls;
