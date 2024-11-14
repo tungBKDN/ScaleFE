@@ -29,3 +29,36 @@ export function PriceFormat(value, unit) {
 export function TextCapitalize(text) {
     return text.toString().charAt(0).toUpperCase() + text.toString().slice(1).toLowerCase();
 }
+
+export function NameTranslating(text) {
+    switch (text.toUppercase()) {
+        case "APPLE":
+            return "Táo";
+        case "ORANGE":
+            return "Cam";
+        case "CUCUMBER":
+            return "Dưa chuột";
+        case "CARROT":
+            return "Cà rốt";
+        case "Ladyfinger":
+            return "Đậu bắp";
+        case "BANANA":
+            return "Chuối";
+        case "PINEAPPLE":
+            return "Dứa";
+        case "WATERMELON":
+            return "Dưa hấu";
+        case "DRAGONFRUIT":
+            return "Thanh long";
+        case "MANGO":
+            return "Xoài";
+        case "GRAPE":
+            return "Nho";
+        case "PEACH":
+            return "Đào";
+        case "PEAR":
+            return "Lê";
+        case "PLUM":
+            return "Mận";
+    }
+}

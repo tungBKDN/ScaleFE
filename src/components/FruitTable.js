@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from "react";
-import { PriceFormat } from "../assets/scripts/ResultFormat";
+import { PriceFormat, NameTranslating } from "../assets/scripts/ResultFormat";
 
 const FruitTableItem = ({ fruit }) => {
     // Fruit {product_id, product_name, price, description}
     return (
         <tr>
             <th scope="row">{fruit.product_id}</th>
-            <td>{fruit.product_name}</td>
+            <td>{NameTranslating(fruit.product_name)}</td>
             <td>{fruit.description}</td>
             <td className="text-end">{PriceFormat(fruit.price, "VND/g")}</td>
         </tr>

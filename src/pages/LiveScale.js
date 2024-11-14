@@ -201,7 +201,7 @@ const LiveScale = () => {
 
     // Connect to the WebSocket server
     useEffect(() => {
-        const socket = new WebSocket('ws://192.168.1.9:8001/ws');
+        const socket = new WebSocket('ws://192.168.1.12:8001/ws');
         setWs(socket);
         setState(2);
 

@@ -32,8 +32,8 @@ const TableOfReceipts = ({ receipt, referencing, total }) => {
                     <tr>
                         <th>Thời gian</th>
                         <th>Tên loại hoa quả</th>
-                        <th className="text-end">Khối lượng (g)</th>
-                        <th className="text-end">Đơn giá (VND/g)</th>
+                        <th className="text-end">Khối lượng (kg)</th>
+                        <th className="text-end">Đơn giá (VND/kg)</th>
                         <th className="text-end">Thành tiền (VND)</th>
                     </tr>
                 </thead>
