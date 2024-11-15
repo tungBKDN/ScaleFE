@@ -26,7 +26,7 @@ const LiveScale = () => {
     const [timeoutId, setTimeoutId] = useState(null);
 
     const HIGH_THRESHOLD = 0.05;
-    const LOW_THRESHOLD = 0.015;
+    const LOW_THRESHOLD = 0.01;
     const FLOOR = 0.025;
     const TIMEOUT = 1500;
 
@@ -40,6 +40,11 @@ const LiveScale = () => {
                 },
                 body: JSON.stringify(receiptID && receiptID !== "N/A" ? { "weight": parseFloat(weight), "receipt_id": receiptID } : { "weight": parseFloat(weight) }),
             });
+            // check the response HTTPCODE
+            // 404
+            if (response.status === 404 || response.status === 500) {
+                alert("Kết nối không ổn định, vui lòng thử lại")
+            }
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -139,7 +144,7 @@ const LiveScale = () => {
         setReceipt(prevReceipt => {
             let _receipt = [...prevReceipt];
             // Add time to receipt
-            let time = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            let time = new Date().toLocaleString().slice(0, 19).replace('T', ' ');
             receiptJSON['time'] = time;
             console.log("addReceipt/ Receipt 1: ", _receipt);
             _receipt.push(receiptJSON);
@@ -201,7 +206,7 @@ const LiveScale = () => {
 
     // Connect to the WebSocket server
     useEffect(() => {
-        const socket = new WebSocket('ws://192.168.1.12:8001/ws');
+        const socket = new WebSocket('ws://192.168.79.133:8001/ws');
         setWs(socket);
         setState(2);
 

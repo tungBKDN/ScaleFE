@@ -31,7 +31,7 @@ export function TextCapitalize(text) {
 }
 
 export function NameTranslating(text) {
-    switch (text.toUppercase()) {
+    switch (text.toUpperCase()) {
         case "APPLE":
             return "Táo";
         case "ORANGE":
@@ -40,8 +40,10 @@ export function NameTranslating(text) {
             return "Dưa chuột";
         case "CARROT":
             return "Cà rốt";
-        case "Ladyfinger":
+        case "LADY FINGER":
             return "Đậu bắp";
+        case "BELL_PEPPER":
+            return "Ớt chuông";
         case "BANANA":
             return "Chuối";
         case "PINEAPPLE":
@@ -52,13 +54,17 @@ export function NameTranslating(text) {
             return "Thanh long";
         case "MANGO":
             return "Xoài";
-        case "GRAPE":
-            return "Nho";
+        case "GRAPES":
+            return "Khổ qua";
         case "PEACH":
             return "Đào";
         case "PEAR":
             return "Lê";
         case "PLUM":
             return "Mận";
+        case "CALABASH":
+            return "Đậu bắp";
+        case "SPONGE GOURD":
+            return "Đậu bắp";
     }
 }
